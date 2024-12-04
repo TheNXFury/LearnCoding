@@ -54,7 +54,7 @@ _start:
 
     ; Calculate the sum
     mov eax, [num1]
-    add eax, [num2]
+    add rax, [num2]
     mov [result], eax
 
     ; Display the result
