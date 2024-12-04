@@ -1,0 +1,110 @@
+X86_64 NASM assembly language is far different from other programming languages
+you may have encountered before. Compared to languages like Python or Java (for
+example), assembly language is technically *not* a programming language but rather
+a mnemonic language for machine code.
+
+# WHAT IS MACHINE CODE?
+
+Put simply, your computer's processor does many calculations every single second.
+Modern CPUs (central processing units) as of 2024 are capable of speeds in the range
+of 4.5-5 GHz, or 4500000000 to 5000000000 calculations a second. Machine code is just
+the raw instructions given to a CPU in order, in which it is supposed to perform.
+
+Instructions from adding a value to another, moving the result to another location in
+memory, and so forth are all the things a CPU can do. In most systems, the CPU has a
+clock chip to determine the speed it can run at, a few ultra-high speed locations on the
+chip to use for storing data temporarily (called registers), and is connected to your
+system memory for extra space.
+
+# WHAT IS THE DESIGN OF ALL THIS?
+
+As mentioned above, x86_64 systems contain registers, which can be used as temporary
+scratch space. However, a few have common use cases:
+
+RAX, RBX, RCX, RDX:
+- RAX (the accumulator): this register is commonly used as a location to "accumulate"
+  data in arithmetic and logical operations.
+- RBX (the base- not to be confused with the base pointer): this is a handy register
+  to use as a base for memory addressing.
+- RCX (the counter): this register is commonly used in loops, recursion, and other
+  similar operations that we will revisit later.
+- RDX (data): this is a multi-purpose register, commonly used for extended data in
+  multiplication and division.
+
+RSI, RDI, RBP, RSP:
+- RSI (source index): this is used very commonly when working with strings and text.
+- RDI (destination index): this is also used very commonly when working with strings.
+- RBP (base pointer): This is used as a base pointer to store the location of the stack
+  frame.
+- RSP (stack pointer): This is used as a pointer to point to the top of the stack.
+
+R8-R15: general purpose registers.
+
+RFLAGS: stores status flags that reflect the outcome of arithmetic operations, like
+  Zero (ZF), Sign (SF), Overflow (OF), or Carry (CF).
+
+RIP: The instruction pointer that contains the address of the next instruction to be
+     executed. This is a critical pointer that gets manipulated when performing loops.
+
+There are other registers too, but these are some of the most important ones.
+
+Some of these concepts are intentionally not fully explained, favoring more detailed
+exploration later in the course (this is just a cursory overview of the registers).
+
+
+# HOW DO VARIABLES WORK IN NASM?
+
+In NASM, you will have a "section" called .data. Within this, you can use multiple
+data types:
+
+- a byte (db).
+- a word (dw). represents a 2-byte (16 bit) integer.
+- a doubleword (dd). reperesents a 4-byte (32 bit) integer.
+- a quadword (dq). represents an 8-byte (64 bit) integer.
+- a string (db). represents a squence of characters with a null byte (\0) at the end.
+
+an example of using this:
+section .data
+    var1 db 42                 ; Define a byte variable with value 42
+    var2 dw 333                ; Define a word with value 333
+    array        dd 1, 2, 3, 4 ; Define a doubleword (4-byte) array
+    message      db 'Hello', 0 ; Define a null-terminated string
+
+As demonstrated above, arrays are created like variables, except with it's elements
+defined sequentially.
+
+In the labs, you will see these variables being accessed frequently.
+
+
+# WHAT ARE SYSCALLS?
+
+Every operating system runs a "kernel", that is responsible for managing processes
+and doing underlying tasks. In our case, we are using the Linux kernel for our course
+and it contains what is called a "syscall table". To simplify this, the Linux kernel
+will respond when we put certain values into our CPU registers, and use the dedicated
+Linux "syscall" value. Depending on what values are where, you can make the kernel print
+content to the terminal for you, open a file, establish a network connection, and more.
+
+the "syscall" operation will invoke this, but many programmers on x86_64 in linux use
+"int 0x80" as well.
+
+# HOW DO I ACTUALLY USE THE ASSEMBLER?
+
+To use nasm to produce a binary on x86_64 linux, you must produce an "object file"
+in the ELF file format. To do this, we run 
+
+nasm -f elf programname.asm -o programname.o
+
+Substitute the file "programname.asm" with your assembly program, and change the
+name of the output file too.
+
+From here, we can run
+
+ld programname.o -o programname
+
+and we will have produced a binary called "programname" in our example. 
+
+
+###############################################################################
+
+When ready, proceed to the file 1.asm and try to attempt the lab!
